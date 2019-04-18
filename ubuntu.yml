@@ -6,6 +6,17 @@
         name: "ubuntu"
         state: started
         config:
+          limits.cpu: "2"
+          limits.memory: 4GB
+          limits.memory.swap: "false"
+          linux.kernel_modules: ip_tables,ip6_tables,netlink_diag,nf_nat,overlay
+          raw.lxc: |
+            lxc.apparmor.profile=unconfined
+            lxc.cap.drop=
+            lxc.cgroup.devices.allow=a
+            lxc.mount.auto=proc:rw sys:rw
+          security.nesting: "true"
+          security.privileged: "true"
           environment.DISPLAY: :0
           raw.idmap: both 1000 1000
           user.user-data: |

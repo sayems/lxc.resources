@@ -16,6 +16,7 @@ Table of contents
 - [Configuration](https://github.com/sayems/lxc.resources/wiki/Installing-and-configuring-LXD#configuration)
 - [LXD Profile](https://github.com/sayems/lxc.resources/wiki/Installing-and-configuring-LXD#profile)
 - [Getting started](https://github.com/sayems/lxc.resources/wiki/Installing-and-configuring-LXD#getting-started)
+- [Managing LXC with Ansible](https://github.com/sayems/lxc.resources/wiki/Managing-LXC-with-Ansible)
 - [Run GUI apps in LXD/LXC](https://github.com/sayems/lxc.resources/wiki/Running-GUI-applications-in-LXD)
 - [Run Vagrant box on LXD/LXC](https://github.com/sayems/lxc.resources/wiki/LXC-provider-for-Vagrant)
 - [Setup k8s on LXD/LXC](https://github.com/sayems/lxc.resources/wiki/Kubernetes-on-Linux-containers)

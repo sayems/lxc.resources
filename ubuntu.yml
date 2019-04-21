@@ -3,7 +3,7 @@
   tasks:
     - name: Creating LXD container
       lxd_container:
-        name: "ubuntu"
+        name: "{{ item }}"
         state: started
         config:
           limits.cpu: "2"
@@ -45,10 +45,12 @@
           mode: pull
           server: https://cloud-images.ubuntu.com/releases
           protocol: simplestreams
-          alias: 18.10/amd64
+          alias: 19.04/amd64
         profiles: ["default"]
         wait_for_ipv4_addresses: true
         timeout: 600
+      with_items: # launch LXD instance 
+        - ubuntu
 
     - name: Install Firefox and its dependecies
       delegate_to: "ubuntu"

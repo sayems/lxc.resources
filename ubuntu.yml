@@ -28,7 +28,6 @@
               - x11-apps
               - mesa-utils
               - pulseaudio
-        description: GUI LXD profile
         devices:
           PASocket:
             path: /tmp/.pulse-native

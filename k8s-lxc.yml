@@ -1,0 +1,87 @@
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Creating LXD container
+      lxd_container:
+        name: "{{ item }}"
+        state: started
+        config:
+          limits.cpu: "2"
+          limits.memory: 8GB
+          limits.memory.swap: "false"
+          linux.kernel_modules: ip_tables,ip6_tables,netlink_diag,nf_nat,overlay
+          raw.lxc: "lxc.apparmor.profile=unconfined\nlxc.cap.drop= \nlxc.cgroup.devices.allow=a\nlxc.mount.auto=proc:rw sys:rw"
+          security.nesting: "true"
+          security.privileged: "true"
+        source:
+          type: image
+          mode: pull
+          server: https://images.linuxcontainers.org
+          protocol: simplestreams
+          alias: ubuntu/bionic/amd64
+        profiles: ["default"]
+        wait_for_ipv4_addresses: true
+        timeout: 600
+      with_items:
+        - k8s-master
+        - k8s-node-1
+        - k8s-node-2
+
+    - name: Initializing the Kubernetes cluster
+      delegate_to: "{{ item }}"
+      script: scripts/k8s.sh
+      with_items:
+        - k8s-master
+#        - k8s-node-1
+#        - k8s-node-2
+
+    - name: Copy k8s admin.conf to ~/.kube/config
+      delegate_to: localhost
+      shell: lxc file pull k8s-master/etc/kubernetes/admin.conf ~/.kube/config
+
+    - name: Install packages  
+      delegate_to: k8s-master
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+        - openssl
+
+    - name: Deploy Kubernetes Dashboard
+      delegate_to: localhost
+      shell: kubectl apply -f dashboard.yml
+
+    - name: Grant full admin privileges to Dashboard's Service Account
+      delegate_to: localhost
+      shell: kubectl apply -f authentication.yml
+
+    - name: Get Helm manifest
+      delegate_to: k8s-master
+      get_url:
+        url: https://raw.githubusercontent.com/helm/helm/master/scripts/get
+        dest: ./get.helm.sh
+
+    - name: Install Helm
+      delegate_to: k8s-master
+      shell: bash ./get.helm.sh
+
+    - name: Remove Helm manifest
+      delegate_to: k8s-master
+      file:
+        path: ./get.helm.sh
+        state: absent
+
+    - name: Create Helm ServiceAccount
+      delegate_to: k8s-master
+      shell: kubectl create serviceaccount tiller --namespace=kube-system
+
+    - name: Create Helm Roles
+      delegate_to: k8s-master
+      shell: kubectl create clusterrolebinding tiller-admin --serviceaccount=kube-system:tiller --clusterrole=cluster-admin
+
+    - name: Init helm
+      delegate_to: k8s-master
+      shell: helm init --service-account=tiller
+      

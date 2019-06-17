@@ -57,6 +57,9 @@ then
 
   # Initialize Kubernetes
   echo "[TASK 9] Initialize Kubernetes Cluster"
+  systemctl restart docker.service || true
+  kubeadm reset || true
+  systemctl kubelet restart || true
   kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=Swap,FileContent--proc-sys-net-bridge-bridge-nf-call-iptables,SystemVerification >> /root/kubeinit.log 2>&1
 
   # Copy Kube admin config

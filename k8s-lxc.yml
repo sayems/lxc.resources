@@ -32,8 +32,8 @@
       script: scripts/k8s.sh
       with_items:
         - k8s-master
-#        - k8s-node-1
-#        - k8s-node-2
+        - k8s-node-1
+        - k8s-node-2
 
     - name: Copy k8s admin.conf to ~/.kube/config
       delegate_to: localhost

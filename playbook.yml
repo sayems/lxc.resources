@@ -26,7 +26,6 @@
         - k8s-master
         - k8s-node-1
         - k8s-node-2
-        - k8s-node-3
 
     - name: Initializing the Kubernetes cluster
       delegate_to: "{{ item }}"
@@ -35,11 +34,14 @@
         - k8s-master
         - k8s-node-1
         - k8s-node-2
-        - k8s-node-3
 
     - name: Copy k8s admin.conf to ~/.kube/config
       delegate_to: localhost
       shell: lxc file pull k8s-master/etc/kubernetes/admin.conf ~/.kube/config
+
+    - name: Copy k8s.sh (only for debug)
+      delegate_to: localhost
+      shell: lxc file push scripts/k8s_centos.sh k8s-master/k8s.sh
 
     - name: Install Yum packages  
       delegate_to: k8s-master

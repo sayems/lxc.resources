@@ -1,0 +1,25 @@
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[containers:vars]
+ansible_connection=lxd
+
+[masters:vars]
+numcpu=2
+
+[nodes:vars]
+numcpu=1
+
+[local]
+localhost ansible_connection=local 
+
+[masters]
+k8s-master
+
+[nodes]
+k8s-node-1 
+k8s-node-2 
+
+[containers:children]
+masters
+nodes
